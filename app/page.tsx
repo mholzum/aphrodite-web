@@ -2,6 +2,8 @@ import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { createServiceClient } from '@/lib/supabase/server'
 
+export const dynamic = 'force-dynamic'
+
 export default async function Home() {
   const cookieStore = await cookies()
   const token = cookieStore.get('aphrodite_session')?.value
