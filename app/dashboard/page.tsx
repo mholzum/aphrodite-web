@@ -168,7 +168,9 @@ export default function Dashboard() {
       setObsLoading(false)
 
       if (!json.subscription_status || json.subscription_status === 'free') {
-        setShowGate(true)
+        const dismissed = localStorage.getItem('aphrodite_gate_dismissed')
+        const tooSoon = dismissed && Date.now() - parseInt(dismissed) < 24 * 60 * 60 * 1000
+        if (!tooSoon) setShowGate(true)
       }
     }
     load()
@@ -527,7 +529,10 @@ export default function Dashboard() {
                 Begin Trial
               </a>
               <button
-                onClick={() => setShowGate(false)}
+                onClick={() => {
+                  localStorage.setItem('aphrodite_gate_dismissed', Date.now().toString())
+                  setShowGate(false)
+                }}
                 style={{
                   background: 'none',
                   border: 'none',
