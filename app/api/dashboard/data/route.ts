@@ -115,5 +115,6 @@ export async function GET(req: NextRequest) {
     recent_logs,
     conversation_history: session.conversation_history ?? [],
     user_id: session.user_id,
+    subscription_status: profile.subscription_status ?? 'free',
   })
 }

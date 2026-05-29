@@ -19,6 +19,7 @@ interface DashboardData {
   streak: number
   logged_today: boolean
   user_id: string | null
+  subscription_status: string | null
 }
 
 // ─── Client-side cycle helpers ────────────────────────────────────────────────
@@ -121,6 +122,7 @@ export default function Dashboard() {
   const [data, setData] = useState<DashboardData | null>(null)
   const [observation, setObservation] = useState<string>('')
   const [obsLoading, setObsLoading] = useState(true)
+  const [showGate, setShowGate] = useState(false)
 
   // Logging state
   const [sleep, setSleep] = useState<number | null>(null)
@@ -164,6 +166,10 @@ export default function Dashboard() {
         setObservation(obs)
       }
       setObsLoading(false)
+
+      if (!json.subscription_status || json.subscription_status === 'free') {
+        setShowGate(true)
+      }
     }
     load()
   }, [router])
@@ -449,7 +455,7 @@ export default function Dashboard() {
       </div>
 
       {/* Streak — bottom right corner, not the focus */}
-      {data.streak > 0 && (
+      {data.streak > 0 && !showGate && (
         <div
           style={{
             position: 'fixed',
@@ -462,6 +468,83 @@ export default function Dashboard() {
           }}
         >
           {data.streak} day{data.streak !== 1 ? 's' : ''}
+        </div>
+      )}
+
+      {/* Subscription gate — appears after first observation loads for free users */}
+      {showGate && (
+        <div
+          style={{
+            position: 'fixed',
+            bottom: 0,
+            left: 0,
+            right: 0,
+            background: 'var(--bg)',
+            borderTop: '1px solid var(--accent)',
+            padding: '28px 24px 44px',
+            zIndex: 100,
+          }}
+        >
+          <div style={{ maxWidth: '480px', margin: '0 auto' }}>
+            <p
+              style={{
+                fontFamily: 'Georgia, serif',
+                fontSize: '20px',
+                lineHeight: 1.5,
+                color: 'var(--text-primary)',
+                margin: '0 0 8px 0',
+              }}
+            >
+              Seven days to know if this is yours.
+            </p>
+            <p
+              style={{
+                fontSize: '13px',
+                color: 'var(--text-secondary)',
+                fontFamily: 'Georgia, serif',
+                fontStyle: 'italic',
+                margin: '0 0 24px 0',
+              }}
+            >
+              No charge until day 8. Cancel anytime before then.
+            </p>
+            <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+              <a
+                href="/subscribe"
+                style={{
+                  flex: 1,
+                  background: 'var(--accent)',
+                  color: 'var(--bg)',
+                  padding: '14px',
+                  fontSize: '11px',
+                  letterSpacing: '0.2em',
+                  textTransform: 'uppercase',
+                  textAlign: 'center',
+                  textDecoration: 'none',
+                  display: 'block',
+                }}
+              >
+                Begin Trial
+              </a>
+              <button
+                onClick={() => setShowGate(false)}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: 'var(--text-secondary)',
+                  fontSize: '11px',
+                  letterSpacing: '0.1em',
+                  textTransform: 'uppercase',
+                  cursor: 'pointer',
+                  opacity: 0.45,
+                  padding: 0,
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                Not now
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>
